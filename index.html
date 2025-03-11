@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Production Tracking</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
   </head>
@@ -39,65 +38,60 @@
 
       <button id="generatePDF">Generate PDF Report</button>
     </div>
-    <button id="generatePDF">Production Completed</button>
 
     <script>
-      let slCounter = 1; // Counter for SL number
+      let slCounter = 1;
 
       document
         .getElementById("jobForm")
         .addEventListener("submit", function (event) {
           event.preventDefault();
 
-          let item = document.getElementById("item").value;
-          let quantity = document.getElementById("quantity").value;
-          let jobDate = document.getElementById("jobDate").value;
+          const item = document.getElementById("item").value;
+          const quantity = document.getElementById("quantity").value;
+          const jobDate = document.getElementById("jobDate").value;
 
-          let formattedDate = formatDate(jobDate);
-
-          let tableBody = document.getElementById("jobTableBody");
-          let newRow = document.createElement("tr");
-
+          const newRow = document.createElement("tr");
           newRow.innerHTML = `
-                <td>${slCounter}</td>
-                <td>${item}</td>
-                <td>${quantity}</td>
-                <td>${formattedDate}</td>
-                <td><input type="time" class="start-time" /></td>
-                <td><input type="time" class="end-time" /></td>
-                <td class="total-time"></td>
-                <td class="status">Not Started</td>
-                <td>
-                    <button class="start-btn">Started</button>
-                    <button class="pause-btn">Paused</button>
-                    <button class="cancel-btn">Cancelled</button>
-                    <button class="complete-btn">Completed</button>
-                    <button class="delete-btn">Delete</button>
-                </td>
-            `;
+            <td>${slCounter}</td>
+            <td>${item}</td>
+            <td>${quantity}</td>
+            <td>${formatDate(jobDate)}</td>
+            <td><input type="time" class="start-time" /></td>
+            <td><input type="time" class="end-time" /></td>
+            <td class="total-time"></td>
+            <td class="status">Not Started</td>
+            <td class="actions">
+              <button class="start-btn">Started</button>
+              <button class="pause-btn">Paused</button>
+              <button class="cancel-btn">Cancelled</button>
+              <button class="complete-btn">Completed</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          `;
 
-          tableBody.appendChild(newRow);
+          document.getElementById("jobTableBody").appendChild(newRow);
           document.getElementById("jobForm").reset();
-          slCounter++; // Increment SL counter
+          slCounter++;
         });
 
       function formatDate(dateString) {
-        let [year, month, day] = dateString.split("-");
+        const [year, month, day] = dateString.split("-");
         return `${day}-${month}-${year}`;
       }
 
       function calculateTotalTime(start, end) {
-        let [startHour, startMinute] = start.split(":").map(Number);
-        let [endHour, endMinute] = end.split(":").map(Number);
+        const [startHour, startMinute] = start.split(":").map(Number);
+        const [endHour, endMinute] = end.split(":").map(Number);
 
-        let startDate = new Date(0, 0, 0, startHour, startMinute);
-        let endDate = new Date(0, 0, 0, endHour, endMinute);
+        const startDate = new Date(0, 0, 0, startHour, startMinute);
+        const endDate = new Date(0, 0, 0, endHour, endMinute);
 
-        let diff = (endDate - startDate) / (1000 * 60);
+        const diff = (endDate - startDate) / (1000 * 60);
         if (diff < 0) return "Invalid Time";
 
-        let hours = Math.floor(diff / 60);
-        let minutes = diff % 60;
+        const hours = Math.floor(diff / 60);
+        const minutes = diff % 60;
 
         return `${hours}h ${minutes}m`;
       }
@@ -109,12 +103,12 @@
             event.target.classList.contains("start-time") ||
             event.target.classList.contains("end-time")
           ) {
-            let row = event.target.closest("tr");
-            let startTime = row.querySelector(".start-time").value;
-            let endTime = row.querySelector(".end-time").value;
+            const row = event.target.closest("tr");
+            const startTime = row.querySelector(".start-time").value;
+            const endTime = row.querySelector(".end-time").value;
 
             if (startTime && endTime) {
-              let totalTime = calculateTotalTime(startTime, endTime);
+              const totalTime = calculateTotalTime(startTime, endTime);
               row.querySelector(".total-time").textContent = totalTime;
             }
           }
@@ -123,7 +117,7 @@
       document
         .getElementById("jobTableBody")
         .addEventListener("click", function (event) {
-          let row = event.target.closest("tr");
+          const row = event.target.closest("tr");
 
           if (event.target.classList.contains("start-btn")) {
             row.querySelector(".status").textContent = "On Progress";
@@ -133,9 +127,9 @@
             row.querySelector(".status").textContent = "Job Cancelled";
           } else if (event.target.classList.contains("complete-btn")) {
             row.querySelector(".status").textContent = "Job Completed";
-            row.style.backgroundColor = "lightgreen";
+            row.style.backgroundColor = "#e8f5e9"; // Light green background
           } else if (event.target.classList.contains("delete-btn")) {
-            let password = prompt("Enter password to delete:");
+            const password = prompt("Enter password to delete:");
             if (password === "Delete") {
               row.remove();
             } else {
@@ -147,15 +141,14 @@
       document
         .getElementById("generatePDF")
         .addEventListener("click", function () {
-          let tableData = [];
-          let rows = document.querySelectorAll("#jobTableBody tr");
+          const tableData = [];
+          const rows = document.querySelectorAll("#jobTableBody tr");
 
           rows.forEach((row) => {
-            let cells = row.querySelectorAll("td");
-            let rowData = [];
+            const cells = row.querySelectorAll("td");
+            const rowData = [];
 
             for (let i = 0; i < cells.length - 2; i++) {
-              // Exclude Actions and Status columns
               if (i === 4 || i === 5) {
                 // Start Time and End Time
                 rowData.push(cells[i].querySelector("input").value);
@@ -167,7 +160,7 @@
             tableData.push(rowData);
           });
 
-          let docDefinition = {
+          const docDefinition = {
             content: [
               { text: "Daily Production Report", style: "header" },
               {
@@ -202,7 +195,7 @@
           pdfMake
             .createPdf(docDefinition)
             .download(
-              `Daily Production Report - ${new Date().toLocaleDateString(
+              `Daily_Production_Report_${new Date().toLocaleDateString(
                 "en-GB"
               )}.pdf`
             );
@@ -210,4 +203,3 @@
     </script>
   </body>
 </html>
-
