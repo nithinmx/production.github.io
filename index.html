@@ -10,32 +10,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.70/vfs_fonts.js"></script>
   </head>
   <body>
-    <h1>Production Tracking</h1>
+    <div class="container">
+      <h1>Production Tracking</h1>
 
-    <form id="jobForm">
-      <input type="text" id="item" placeholder="Item" required />
-      <input type="number" id="quantity" placeholder="Quantity" required />
-      <input type="date" id="jobDate" required />
-      <button type="submit">Add Job</button>
-    </form>
+      <form id="jobForm">
+        <input type="text" id="item" placeholder="Item" required />
+        <input type="number" id="quantity" placeholder="Quantity" required />
+        <input type="date" id="jobDate" required />
+        <button type="submit">Add Job</button>
+      </form>
 
-    <table>
-      <thead>
-        <tr>
-          <th>SL</th>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Date</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th>Total Time</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="jobTableBody"></tbody>
-    </table>
+      <table>
+        <thead>
+          <tr>
+            <th>SL</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Total Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="jobTableBody"></tbody>
+      </table>
 
+      <button id="generatePDF">Generate PDF Report</button>
+    </div>
     <button id="generatePDF">Production Completed</button>
 
     <script>
@@ -207,3 +210,4 @@
     </script>
   </body>
 </html>
+
