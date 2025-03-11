@@ -29,6 +29,7 @@
           <th>Start Time</th>
           <th>End Time</th>
           <th>Total Time</th>
+          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -62,7 +63,11 @@
                 <td><input type="time" class="start-time" /></td>
                 <td><input type="time" class="end-time" /></td>
                 <td class="total-time"></td>
+                <td class="status">Not Started</td>
                 <td>
+                    <button class="start-btn">Started</button>
+                    <button class="pause-btn">Paused</button>
+                    <button class="cancel-btn">Cancelled</button>
                     <button class="complete-btn">Completed</button>
                     <button class="delete-btn">Delete</button>
                 </td>
@@ -117,10 +122,22 @@
         .addEventListener("click", function (event) {
           let row = event.target.closest("tr");
 
-          if (event.target.classList.contains("delete-btn")) {
-            row.remove();
+          if (event.target.classList.contains("start-btn")) {
+            row.querySelector(".status").textContent = "On Progress";
+          } else if (event.target.classList.contains("pause-btn")) {
+            row.querySelector(".status").textContent = "Job Paused";
+          } else if (event.target.classList.contains("cancel-btn")) {
+            row.querySelector(".status").textContent = "Job Cancelled";
           } else if (event.target.classList.contains("complete-btn")) {
+            row.querySelector(".status").textContent = "Job Completed";
             row.style.backgroundColor = "lightgreen";
+          } else if (event.target.classList.contains("delete-btn")) {
+            let password = prompt("Enter password to delete:");
+            if (password === "Delete") {
+              row.remove();
+            } else {
+              alert("Incorrect password. Job not deleted.");
+            }
           }
         });
 
@@ -134,7 +151,8 @@
             let cells = row.querySelectorAll("td");
             let rowData = [];
 
-            for (let i = 0; i < cells.length - 1; i++) {
+            for (let i = 0; i < cells.length - 2; i++) {
+              // Exclude Actions and Status columns
               if (i === 4 || i === 5) {
                 // Start Time and End Time
                 rowData.push(cells[i].querySelector("input").value);
