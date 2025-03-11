@@ -10,7 +10,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Daily Production Report</h1>
+      <h1>Production Tracking</h1>
 
       <form id="jobForm">
         <input type="text" id="item" placeholder="Item" required />
@@ -25,7 +25,7 @@
             <th>SL</th>
             <th>Item</th>
             <th>Quantity</th>
-            <th>Date</th>
+            <th>Date (DD/MM/YYYY)</th>
             <th>Start Time</th>
             <th>End Time</th>
             <th>Total Time</th>
@@ -150,23 +150,26 @@
 
             for (let i = 0; i < cells.length - 2; i++) {
               if (i === 4 || i === 5) {
-                // Start Time and End Time
+                // Start/End Time inputs
                 rowData.push(cells[i].querySelector("input").value);
+              } else if (i === 3) {
+                // Date column
+                // Convert displayed date back to input format for PDF
+                const [day, month, year] = cells[i].innerText.split("/");
+                rowData.push(
+                  `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`
+                );
               } else {
                 rowData.push(cells[i].innerText);
               }
             }
-
             tableData.push(rowData);
           });
 
           const docDefinition = {
+            pageOrientation: "landscape",
             content: [
               { text: "Daily Production Report", style: "header" },
-              {
-                text: `Date: ${new Date().toLocaleDateString("en-GB")}`,
-                style: "subheader",
-              },
               {
                 table: {
                   headerRows: 1,
@@ -176,7 +179,7 @@
                       "SL",
                       "Item",
                       "Quantity",
-                      "Date",
+                      "Date (DD/MM/YYYY)",
                       "Start Time",
                       "End Time",
                       "Total Time",
@@ -187,17 +190,21 @@
               },
             ],
             styles: {
-              header: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-              subheader: { fontSize: 12, margin: [0, 0, 0, 10] },
+              header: {
+                fontSize: 18,
+                bold: true,
+                alignment: "center",
+                margin: [0, 0, 0, 20],
+              },
             },
           };
 
           pdfMake
             .createPdf(docDefinition)
             .download(
-              `Daily_Production_Report_${new Date().toLocaleDateString(
-                "en-GB"
-              )}.pdf`
+              `Production_Report_${new Date()
+                .toLocaleDateString("en-GB")
+                .replace(/\//g, "-")}.pdf`
             );
         });
     </script>
