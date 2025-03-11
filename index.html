@@ -50,6 +50,109 @@
     </div>
 
     <script>
+      let slCounter = 1;
+
+      // Add Job Form Submission
+      document
+        .getElementById("jobForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const item = document.getElementById("item").value;
+          const quantity = document.getElementById("quantity").value;
+          const jobDate = document.getElementById("jobDate").value;
+
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `
+      <td>${slCounter}</td>
+      <td>${item}</td>
+      <td>${quantity}</td>
+      <td>${formatDate(jobDate)}</td>
+      <td><input type="time" class="start-time" /></td>
+      <td><input type="time" class="end-time" /></td>
+      <td class="total-time"></td>
+      <td class="status">Not Started</td>
+      <td class="actions">
+        <button class="start-btn">Started</button>
+        <button class="pause-btn">Paused</button>
+        <button class="cancel-btn">Cancelled</button>
+        <button class="complete-btn">Completed</button>
+        <button class="delete-btn">Delete</button>
+      </td>
+    `;
+
+          document.getElementById("jobTableBody").appendChild(newRow);
+          document.getElementById("jobForm").reset();
+          slCounter++;
+        });
+
+      // Format Date to DD/MM/YYYY
+      function formatDate(dateString) {
+        const [year, month, day] = dateString.split("-");
+        return `${day}/${month}/${year}`;
+      }
+
+      // Calculate Total Time
+      function calculateTotalTime(start, end) {
+        const [startHour, startMinute] = start.split(":").map(Number);
+        const [endHour, endMinute] = end.split(":").map(Number);
+
+        const startDate = new Date(0, 0, 0, startHour, startMinute);
+        const endDate = new Date(0, 0, 0, endHour, endMinute);
+
+        const diff = (endDate - startDate) / (1000 * 60);
+        if (diff < 0) return "Invalid Time";
+
+        const hours = Math.floor(diff / 60);
+        const minutes = diff % 60;
+
+        return `${hours}h ${minutes}m`;
+      }
+
+      // Handle Input Changes (Start Time and End Time)
+      document
+        .getElementById("jobTableBody")
+        .addEventListener("input", function (event) {
+          if (
+            event.target.classList.contains("start-time") ||
+            event.target.classList.contains("end-time")
+          ) {
+            const row = event.target.closest("tr");
+            const startTime = row.querySelector(".start-time").value;
+            const endTime = row.querySelector(".end-time").value;
+
+            if (startTime && endTime) {
+              const totalTime = calculateTotalTime(startTime, endTime);
+              row.querySelector(".total-time").textContent = totalTime;
+            }
+          }
+        });
+
+      // Handle Button Clicks (Status and Delete)
+      document
+        .getElementById("jobTableBody")
+        .addEventListener("click", function (event) {
+          const row = event.target.closest("tr");
+
+          if (event.target.classList.contains("start-btn")) {
+            row.querySelector(".status").textContent = "On Progress";
+          } else if (event.target.classList.contains("pause-btn")) {
+            row.querySelector(".status").textContent = "Job Paused";
+          } else if (event.target.classList.contains("cancel-btn")) {
+            row.querySelector(".status").textContent = "Job Cancelled";
+          } else if (event.target.classList.contains("complete-btn")) {
+            row.querySelector(".status").textContent = "Job Completed";
+            row.style.backgroundColor = "#e8f5e9"; // Light green background
+          } else if (event.target.classList.contains("delete-btn")) {
+            const password = prompt("Enter password to delete:");
+            if (password === "Delete") {
+              row.remove();
+            } else {
+              alert("Incorrect password. Job not deleted.");
+            }
+          }
+        });
+
       // ... [Keep all previous JavaScript code until the PDF generation part]
 
       document
