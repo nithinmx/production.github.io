@@ -64,22 +64,22 @@
 
           const newRow = document.createElement("tr");
           newRow.innerHTML = `
-      <td>${slCounter}</td>
-      <td>${item}</td>
-      <td>${quantity}</td>
-      <td>${formatDate(jobDate)}</td>
-      <td><input type="time" class="start-time" /></td>
-      <td><input type="time" class="end-time" /></td>
-      <td class="total-time"></td>
-      <td class="status">Not Started</td>
-      <td class="actions">
-        <button class="start-btn">Started</button>
-        <button class="pause-btn">Paused</button>
-        <button class="cancel-btn">Cancelled</button>
-        <button class="complete-btn">Completed</button>
-        <button class="delete-btn">Delete</button>
-      </td>
-    `;
+          <td>${slCounter}</td>
+          <td>${item}</td>
+          <td>${quantity}</td>
+          <td>${formatDate(jobDate)}</td>
+          <td><input type="time" class="start-time" /></td>
+          <td><input type="time" class="end-time" /></td>
+          <td class="total-time"></td>
+          <td class="status">Not Started</td>
+          <td class="actions">
+            <button class="start-btn">Started</button>
+            <button class="pause-btn">Paused</button>
+            <button class="cancel-btn">Cancelled</button>
+            <button class="complete-btn">Completed</button>
+            <button class="delete-btn">Delete</button>
+          </td>
+        `;
 
           document.getElementById("jobTableBody").appendChild(newRow);
           document.getElementById("jobForm").reset();
@@ -153,8 +153,7 @@
           }
         });
 
-      // ... [Keep all previous JavaScript code until the PDF generation part]
-
+      // Generate PDF
       document
         .getElementById("generatePDF")
         .addEventListener("click", function () {
@@ -169,24 +168,25 @@
             const rowData = [];
 
             for (let i = 0; i < cells.length - 2; i++) {
-              if (i === 4 || i === 5) {
-                // Start Time and End Time
-                rowData.push(cells[i].querySelector("input").value);
-              } else if (i === 3) {
-                // Date Column (already in DD/MM/YYYY format)
-                rowData.push(cells[i].innerText);
-              } else {
-                rowData.push(cells[i].innerText);
-              }
+              const cellContent =
+                cells[i].querySelector("input")?.value || cells[i].innerText;
+              rowData.push({
+                text: cellContent,
+                alignment: "center",
+                margin: [0, 5],
+              });
             }
-
             tableData.push(rowData);
           });
 
           const docDefinition = {
             pageOrientation: "landscape",
             content: [
-              { text: "Daily Production Report", style: "header" },
+              {
+                text: "Daily Production Report",
+                style: "header",
+                margin: [0, 0, 0, 20],
+              },
               {
                 table: {
                   headerRows: 1,
@@ -196,7 +196,7 @@
                       { text: "SL", style: "tableHeader" },
                       { text: "Item", style: "tableHeader" },
                       { text: "Quantity", style: "tableHeader" },
-                      { text: "Date (DD/MM/YYYY)", style: "tableHeader" },
+                      { text: "Date", style: "tableHeader" },
                       { text: "Start Time", style: "tableHeader" },
                       { text: "End Time", style: "tableHeader" },
                       { text: "Total Time", style: "tableHeader" },
@@ -205,52 +205,21 @@
                   ],
                 },
               },
-              {
-                columns: [
-                  {
-                    text: `Prepared By:\n${supervisorName}`,
-                    style: "footerLeft",
-                  },
-                  {
-                    text: "Approved By:\nProduction Manager",
-                    style: "footerRight",
-                  },
-                ],
-                margin: [40, 20, 40, 0],
-              },
+              { text: `Prepared By: ${supervisorName}`, margin: [0, 20, 0, 0] },
             ],
             styles: {
-              header: {
-                fontSize: 18,
-                bold: true,
-                alignment: "center",
-                margin: [0, 0, 0, 20],
-              },
+              header: { fontSize: 18, bold: true, alignment: "center" },
               tableHeader: {
                 bold: true,
-                fillColor: "#f2f2f2", // Light grey background
+                fillColor: "#f2f2f2",
                 alignment: "center",
-              },
-              footerLeft: {
-                fontSize: 12,
-                alignment: "left",
-                margin: [0, 20, 0, 0],
-              },
-              footerRight: {
-                fontSize: 12,
-                alignment: "right",
-                margin: [0, 20, 0, 0],
               },
             },
           };
 
           pdfMake
             .createPdf(docDefinition)
-            .download(
-              `Production_Report_${new Date()
-                .toLocaleDateString("en-GB")
-                .replace(/\//g, "-")}.pdf`
-            );
+            .download(`Daily_Production_Report.pdf`);
         });
     </script>
   </body>
